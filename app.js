@@ -1,24 +1,32 @@
 const express = require('express');
-const path = require('path');
+const ejs = require('ejs');
 const app = express();
 
-// middleware istek cevap döngüsünün arasında ek işlemler yapmak için kullanılır
+// Template Engine
+app.set('view engine', 'ejs');
 
-// const myLogger = (req, res, next) => {
-//   console.log('Middleware Log 1');
-//   next(); // next ile bir sonraki middleware çalışır
-// };
-
-// app.use(myLogger);
-
-// app.use(express.static('public')); burada middleware ile dosyalarımızı statik olarak yükledik
+// burada middleware ile dosyalarımızı statik olarak yükledik
+app.use(express.static('public'));
 
 const port = 3000;
 
+// Routing
 app.get('/', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'public/index.html'));
+  res.render('index'); // burada index.ejs dosyasını render ediyoruz
 });
 
+app.get('/about', (req, res) => {
+  res.render('about'); // burada index.ejs dosyasını render ediyoruz
+});
+
+app.get('/add', (req, res) => {
+  res.render('add');
+});
 app.listen(port, () => {
   console.log(`Sunucu ${port} portunda çalışıyor`);
 });
+
+// ejs kullanabilmek için view adlı klasoru oluşturup içine html dosyasalarını kopyalıyoruz
+// ve uzantısını .ejs ile değiştiriyoruz
+// Ek olarak html deki kop parçalarını parça parça include edebiliriz
+// ve kod tekrarını engellemiş oluruz (<%- include(filepath) -%>)
