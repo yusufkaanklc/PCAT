@@ -1,5 +1,5 @@
 const express = require('express');
-const path = require('path');
+
 const app = express();
 
 // middleware istek cevap döngüsünün arasında ek işlemler yapmak için kullanılır
@@ -13,12 +13,62 @@ const app = express();
 
 app.use(express.static('public')); // burada middleware ile dosyalarımızı statik olarak yükledik
 
-const port = 3000;
-
-app.get('/', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'public/index.html'));
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
 });
 
-app.listen(port, () => {
-  console.log(`Sunucu ${port} portunda çalışıyor`);
-});
+const soru = (quest) => {
+  return new Promise((resolve, reject) => {
+    rl.question(quest, (answer) => {
+      if (!answer) {
+        console.log('Boş bırakılamaz. Tekrar giriniz:');
+        soru(quest).then(resolve);
+      } else {
+        resolve(answer);
+      }
+    });
+  });
+};
+
+const server = (data, endpoint) => {
+  return new Promise((resolve, reject) => {
+    if (endpoint) {
+      app.get(`/${endpoint}`, (req, res) => {
+        res.status(200).set({ 'Content-Type': 'text/plain' }).send(data);
+      });
+
+      app.get('/', (req, res) => {
+        res.status(200).set({ 'Content-Type': 'text/html' });
+        const photo = {
+          id: 1,
+          name: 'photo name',
+          desc: 'photo description',
+        };
+        res.send(photo);
+      });
+
+      app.listen(port, () => {
+        console.log(`Server ${port} portunda çalışıyor`);
+      });
+      resolve();
+    } else {
+      reject('Endpoint yok');
+    }
+  });
+};
+
+const main = async () => {
+  try {
+    const data = await soru('İçerik giriniz:');
+    const endpoint = await soru('Endpoint giriniz:');
+
+    await server(data, endpoint);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    rl.close();
+  }
+};
+
+main();
