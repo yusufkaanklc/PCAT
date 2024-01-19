@@ -2,11 +2,15 @@ const express = require('express');
 const ejs = require('ejs');
 const app = express();
 
+let imageObject = {};
+
 // Template Engine
 app.set('view engine', 'ejs');
 
 // burada middleware ile dosyalarımızı statik olarak yükledik
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true })); // burada req body kısmındaki form verilerini okumak için gerekli middleware eklendi
+app.use(express.json()); // burada istekteki json verilerini okumak için gerekli middleware eklendi
 
 const port = 3000;
 
@@ -21,6 +25,19 @@ app.get('/about', (req, res) => {
 
 app.get('/add', (req, res) => {
   res.render('add');
+});
+
+app.post('/photos', async (req, res) => {
+  try {
+    imageSave = () => {
+      imageObject = req.body;
+    };
+    await imageSave();
+    console.log(imageObject);
+    res.redirect('/add');
+  } catch (error) {
+    console.log('Resim kaydetme hatası: ' + error);
+  }
 });
 app.listen(port, () => {
   console.log(`Sunucu ${port} portunda çalışıyor`);
