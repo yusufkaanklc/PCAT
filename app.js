@@ -41,9 +41,19 @@ app.get('/add', (req, res) => {
 app.post('/photos', async (req, res) => {
   try {
     await Photo.create(req.body);
-    res.redirect('/add');
+    res.redirect('/');
   } catch (error) {
-    console.log('Resim kaydetme hatası: ' + error);
+    console.log('Veri kaydetme hatası: ' + error);
+  }
+});
+
+app.get('/photos/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const photo = await Photo.findById(id);
+    res.render('photo', { photo });
+  } catch (error) {
+    console.log('Veri getirme hatası ' + error);
   }
 });
 app.listen(port, () => {
