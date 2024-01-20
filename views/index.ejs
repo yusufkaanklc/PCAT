@@ -66,11 +66,14 @@
             </div>
 
             <div class="row tm-catalog-item-list">
+              <% if (photos.length == 0) { %>
+                <h3>Herhangi bir resim bulunamadı</h3>
+              <% } %>
               <% for (let i = 0; i < photos.length; i++) { %>
                 <div class="col-lg-4 col-md-6 col-sm-12 tm-catalog-item">
                   <div class="position-relative tm-thumbnail-container">
                     <img
-                      src="https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_1280.jpg" 
+                      src="<%= photos[i].image %>" 
                       alt="Resim"
                       class="img-fluid tm-catalog-item-img"
                     />
@@ -78,7 +81,7 @@
                       href="/photos/<%= photos[i]._id %>"
                       class="position-absolute tm-img-overlay"
                     >
-                      <i class="fas fa-play tm-overlay-icon"></i>
+                      
                     </a>
                   </div>
                   <div class="p-4 tm-bg-gray tm-catalog-item-description">

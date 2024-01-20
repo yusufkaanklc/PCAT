@@ -1,5 +1,7 @@
 const express = require('express');
 const ejs = require('ejs');
+const fs = require('fs');
+const fileUpload = require('express-fileupload');
 const Photo = require('./models/Photo');
 const mongoose = require('mongoose');
 const app = express();
@@ -16,6 +18,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true })); // burada req body kısmındaki form verilerini okumak için gerekli middleware eklendi
 app.use(express.json()); // burada istekteki json verilerini okumak için gerekli middleware eklendi
+app.use(fileUpload()); // burada dosya yuklemek için gerekli middleware eklendi
 
 const port = 3000;
 
@@ -39,8 +42,29 @@ app.get('/add', (req, res) => {
 });
 
 app.post('/photos', async (req, res) => {
+  // burada formdan gelen verilerin kaydedilmesi için gerekli middleware eklendi
   try {
-    await Photo.create(req.body);
+    const uploadDir = 'public/uploads';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+
+    let uploadedImage = req.files.image;
+    console.log(uploadedImage);
+    let uploadPath = __dirname + '/public/uploads/' + uploadedImage.name;
+
+    uploadedImage.mv(uploadPath, async (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send(err);
+      }
+
+      await Photo.create({
+        ...req.body,
+        image: '/uploads/' + uploadedImage.name,
+      });
+    });
+
     res.redirect('/');
   } catch (error) {
     console.log('Veri kaydetme hatası: ' + error);
@@ -48,6 +72,7 @@ app.post('/photos', async (req, res) => {
 });
 
 app.get('/photos/:id', async (req, res) => {
+  // burada tekil verilerin getirilmesi için gerekli middleware eklendi
   try {
     const { id } = req.params;
     const photo = await Photo.findById(id);
