@@ -9,8 +9,17 @@ const Photo = require('./models/Photo');
 router.get('/', async (req, res) => {
   try {
     // Tüm fotoğrafları veritabanından al
-    const photos = await Photo.find({});
-    res.render('index', { photos });
+    const page = req.query.page || 1; // Sayfa numarası
+    const limit = 3; // Sayfa boyutu (3 resim)
+    const totalPhotos = await Photo.find().countDocuments(); // Toplam fotoğraf sayısı
+    const photos = await Photo.find({})
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.render('index', {
+      photos: photos,
+      current: page,
+      pages: Math.ceil(totalPhotos / limit),
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send('Sunucu hatası');
