@@ -45,17 +45,17 @@
                 <!-- Share box -->
                 <div class="tm-bg-gray tm-share-box">
                   <div class="text-center">
-                    <button
-                      class="btn btn-primary p-0 mb-4 tm-btn-animate tm-btn-download tm-icon-download"
-                    >
-                      <span>Update Details</span>
+                    <button class="btn btn-primary p-0 mb-4 tm-btn-download">
+                      <a href="/photos/edit/<%= photo._id %>">
+                        <span>Update Details</span></a
+                      >
                     </button>
                   </div>
                   <div class="text-center">
-                    <button
-                      class="btn btn-danger p-0 tm-btn-animate tm-btn-download tm-icon-download"
-                    >
-                      <span>Delete Photo</span>
+                    <button class="btn btn-danger p-0 tm-btn-download">
+                      <a href="/" onclick="deletePhoto('<%= photo._id %>');"
+                        ><span>Delete Photo</span></a
+                      >
                     </button>
                   </div>
                 </div>
@@ -72,5 +72,26 @@
 
     <script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script>
+      function deletePhoto(id) {
+        fetch(`/photos/delete/${id}?_method=DELETE`, {
+          method: 'DELETE',
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.text();
+          })
+          .then((data) => {
+            console.log('Delete successful:', data);
+            // Handle success as needed, e.g., refresh the page
+          })
+          .catch((error) => {
+            console.error('Delete error:', error);
+            // Handle error as needed
+          });
+      }
+    </script>
   </body>
 </html>
