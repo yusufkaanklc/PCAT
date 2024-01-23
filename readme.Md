@@ -20,7 +20,7 @@ The following software and tools are needed to run this project:
 1. Clone this repository:
 
 ```bash
-git clone https://github.com/user/PhotoGallery.git
+git clone https://github.com/yusufkaanklc/PCAT.git
 ```
 
 
